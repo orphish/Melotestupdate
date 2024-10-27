@@ -61,13 +61,14 @@ class RyujinxEmulator {
         ]
          */
         
-        args.append("ryujinx")
-        
+        args.append(config.inputPath)
         args.append("--graphics-backend")
         args.append(config.graphicsBackend)
-        
+        args.append(contentsOf: ["--memory-manager-mode", "SoftwarePageTable"])
+        // args.append(contentsOf: ["--fullscreen", "true"])
+        args.append(contentsOf: ["--enable-debug-logs", "true"])
+        args.append(contentsOf: ["--enable-trace-logs", "true"])
         // args.append("--input-path")
-        args.append(config.inputPath)
         
         args.append(contentsOf: config.additionalArgs)
         
@@ -81,6 +82,7 @@ class RyujinxEmulator {
         }
         
         var argvPtrs = cArgs
+        
         
         let result = ryujinxMain(Int32(args.count), &argvPtrs)
         
@@ -102,14 +104,17 @@ class RyujinxEmulator {
             
             let port = Port()
             runLoop.add(port, forMode: .default)
-
-            do {
-                try Self.start(with: config)
-            } catch {
-                Self.log("Emulation failed to start: \(error)")
-                self.isRunning = false
-                return
+            
+            DispatchQueue.main.async {
+                do {
+                    try Self.start(with: config)
+                } catch {
+                    Self.log("Emulation failed to start: \(error)")
+                    self.isRunning = false
+                    return
+                }
             }
+            
             
             
             while self.isRunning && runLoop.run(mode: .default, before: .distantFuture) {
@@ -122,6 +127,8 @@ class RyujinxEmulator {
         }
         
         emulationThread?.name = "RyujinxEmulationThread"
+        emulationThread?.qualityOfService = .userInteractive
+        emulationThread?.threadPriority = 0.9
         emulationThread?.start()
     }
     

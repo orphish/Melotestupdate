@@ -12,24 +12,31 @@ import GameController
 var theWindow: UIWindow? = nil
 
 struct ContentView: View {
+    @State var device: MTLDevice? = MTLCreateSystemDefaultDevice()
     @State var gameUrl: URL?
     @State var showFileImporter: Bool = false
+    @State var emulationStarted: Bool = false
     var body: some View {
-        VStack {
-            Button {
-                showFileImporter.toggle()
-            } label: {
-                Text("Select Game")
-            }
-            if let gameUrl {
+        ZStack {
+            
+            
+            VStack {
+                Text("NX iOS")
                 Button {
-                    DispatchQueue.main.async {
-                        showVirtualController(url: gameUrl)
-                    }
+                    showFileImporter.toggle()
                 } label: {
-                    Text("Go!")
+                    Text("Select Game")
                 }
-                .padding(8)
+                if let gameUrl {
+                    Button {
+                        emulationStarted = true
+                        gameUrl.startAccessingSecurityScopedResource()
+                        showVirtualController(url: gameUrl)
+                    } label: {
+                        Text("Go!")
+                    }
+                    .padding(8)
+                }
             }
         }
         .padding()
@@ -55,11 +62,9 @@ func startEmulation(game: URL) {
         enableKeyboard: false,
         graphicsBackend: "Vulkan"
     )
-    DispatchQueue.main.async {
-        SDL_SetMainReady()
-        SDL_iPhoneSetEventPump(SDL_TRUE)
-        patchMakeKeyAndVisible()
-    }
+    patchMakeKeyAndVisible()
+    SDL_SetMainReady()
+    SDL_iPhoneSetEventPump(SDL_TRUE)
     let emulator = RyujinxEmulator()
     do {
         try emulator.startWithRunLoop(config: config)
@@ -78,14 +83,10 @@ func patchMakeKeyAndVisible() {
 extension UIWindow {
     @objc func wdb_makeKeyAndVisible() {
         print("Making window key and visible...")
-        if #available(iOS 13.0, *) {
-            self.windowScene = (UIApplication.shared.connectedScenes.first! as! UIWindowScene)
-        }
+        self.windowScene = (UIApplication.shared.connectedScenes.first! as! UIWindowScene)
         self.wdb_makeKeyAndVisible()
         theWindow = self
-        if #available(iOS 15.0, *) {
-            reconnectVirtualController()
-        }
+        reconnectVirtualController()
     }
 }
 
