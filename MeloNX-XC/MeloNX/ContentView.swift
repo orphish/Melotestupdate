@@ -62,9 +62,13 @@ func startEmulation(game: URL) {
         enableKeyboard: false,
         graphicsBackend: "Vulkan"
     )
-    patchMakeKeyAndVisible()
-    SDL_SetMainReady()
-    SDL_iPhoneSetEventPump(SDL_TRUE)
+    
+    DispatchQueue.main.async {
+        patchMakeKeyAndVisible()
+        SDL_SetMainReady()
+        SDL_iPhoneSetEventPump(SDL_TRUE)
+        SDL_Init(SDL_INIT_VIDEO)
+    }
     let emulator = RyujinxEmulator()
     do {
         try emulator.startWithRunLoop(config: config)

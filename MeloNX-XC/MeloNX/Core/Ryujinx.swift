@@ -64,10 +64,11 @@ class RyujinxEmulator {
         args.append(config.inputPath)
         args.append("--graphics-backend")
         args.append(config.graphicsBackend)
-        args.append(contentsOf: ["--memory-manager-mode", "SoftwarePageTable"])
+        // args.append(contentsOf: ["--memory-manager-mode", "SoftwarePageTable"])
         // args.append(contentsOf: ["--fullscreen", "true"])
         args.append(contentsOf: ["--enable-debug-logs", "true"])
         args.append(contentsOf: ["--enable-trace-logs", "true"])
+        args.append(contentsOf: ["--input-id-1", "1-47150005-05ac-0000-0100-00004f066d01"])
         // args.append("--input-path")
         
         args.append(contentsOf: config.additionalArgs)
