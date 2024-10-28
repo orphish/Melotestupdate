@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/MeloNX-Emu/MeloNX">
-        <img src="https://cdn.discordapp.com/attachments/1292940840351830036/1300130114675146882/DALLE_2024-10-13_07.20.07_-_A_minimalistic_logo_for_a_Nintendo_Switch_emulator_meloNX_incorporating_a_melon_instead_of_Joy-Con_controllers._The_logo_features_a_thin_rectangula_copy.jpg?ex=672060c6&is=671f0f46&hm=95abc7075ab79cfab8236e774187aa1f49d4bca2913ee93d77aae435727ae686&" alt="MeloNX Logo" width="120">
+        <img src="https://cdn.discordapp.com/attachments/1292940840351830036/1300350019370487893/Screenshot_2024-10-28_at_06.46.25.png?ex=672084d3&is=671f3353&hm=bacefb41ab6f92e0091f6d4f3a781c0d5e144a96cd0fbae239bb93093e385e18&" alt="MeloNX Logo" width="120">
     </a>
 </p>
 
