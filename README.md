@@ -1,13 +1,6 @@
 <p align="center">
     MeloNX enables Nintendo Switch game emulation on iOS using the Ryujinx iOS code base.
 
-<h1 align="center">
-  <br>
-  <a href="https://melonx-emu.github.io/"><img src="[https://i.imgur.com/WcCj6Rt.png]" alt="MeloNX" width="150"></a>
-  <br>
-  <b>MeloNX</b>
-  <br>
-</h1>
 
 <p align="center">
        MeloNX is an iOS Nintendo Switch emulator based on Ryujinx, written primarily in C#. Designed to bring accurate performance and a user-friendly interface to iOS, MeloNX makes Switch games accessible on Apple devices.
@@ -23,7 +16,7 @@
     </a>
     <br>
     <br>
-    <img src="https://i.imgur.com/WcCj6Rt.png" alt="MeloNX Screenshot">
+    <img src="https://cdn.discordapp.com/attachments/1292940840351830036/1300130114675146882/DALLE_2024-10-13_07.20.07_-_A_minimalistic_logo_for_a_Nintendo_Switch_emulator_meloNX_incorporating_a_melon_instead_of_Joy-Con_controllers._The_logo_features_a_thin_rectangula_copy.jpg?ex=672060c6&is=671f0f46&hm=95abc7075ab79cfab8236e774187aa1f49d4bca2913ee93d77aae435727ae686&" alt="MeloNX Screenshot">
 </p>
 
 ## Compatibility
