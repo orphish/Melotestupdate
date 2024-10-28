@@ -13,12 +13,6 @@
        Developed from the ground up, MeloNX is open-source and available on Github under the <a href="https://github.com/MeloNX-Emu/MeloNX/blob/master/LICENSE.txt" target="_blank">MIT license</a>. <br />
 </p>
 
-<p align="center">
-    <a href="https://discord.com/invite/MeloNX">
-        <img src="https://img.shields.io/discord/410208534861447168?color=5865F2&label=MeloNX&logo=discord&logoColor=white" alt="Discord">
-    </a>
-</p>
-
 ## Compatibility
 
 As of October 2023, MeloNX can only play the audio of games.
