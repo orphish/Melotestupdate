@@ -16,12 +16,32 @@ struct ContentView: View {
     @State var gameUrl: URL?
     @State var showFileImporter: Bool = false
     @State var emulationStarted: Bool = false
+    @State var mainThread: Bool = false
+    
+    @State var debugmode: Int = 0
+    
     var body: some View {
         ZStack {
             
             
             VStack {
                 Text("NX iOS")
+                    .font(.largeTitle)
+                    .onTapGesture {
+                        debugmode += 1
+                    }
+                    .padding()
+                
+                if debugmode > 9 {
+                    Text("Debug Mode:")
+                        .font(.title)
+                    Text("Is on Main Thread?: \(mainThread)")
+                        .font(.title2)
+                    Toggle(isOn: $mainThread) {
+                        Text("Use Main Thread")
+                    }
+                }
+                
                 Button {
                     showFileImporter.toggle()
                 } label: {
@@ -31,7 +51,14 @@ struct ContentView: View {
                     Button {
                         emulationStarted = true
                         gameUrl.startAccessingSecurityScopedResource()
-                        showVirtualController(url: gameUrl)
+                        
+                        let config = RyujinxEmulator.Configuration(
+                            inputPath: gameUrl.path,
+                            mainThread: mainThread,
+                            graphicsBackend: "Vulkan"
+                        )
+                        
+                        showVirtualController(url: gameUrl, ryuconfig: config)
                     } label: {
                         Text("Go!")
                     }
@@ -51,18 +78,14 @@ struct ContentView: View {
     }
 }
 
-func startEmulation(game: URL) {
+func startEmulation(game: URL, config: RyujinxEmulator.Configuration) {
     setenv("DOTNET_EnableDiagnostics", "0", 1)
     setenv("HOME", String(validatingUTF8: getenv("HOME"))! + "/Documents", 1)
     setenv("MVK_CONFIG_LOG_LEVEL", "4", 1)
     
-    let config = RyujinxEmulator.Configuration(
-        inputPath: game.path,
-        enableKeyboard: false,
-        graphicsBackend: "Vulkan"
-    )
+    let config = config
     
-    patchMakeKeyAndVisible()
+    // patchMakeKeyAndVisible()
     SDL_SetMainReady()
     SDL_iPhoneSetEventPump(SDL_TRUE)
     print(SDL_Init(SDL_INIT_VIDEO))
@@ -105,7 +128,7 @@ extension UIWindow {
 @available(iOS 15.0, *)
 var g_gcVirtualController: GCVirtualController!
 @available(iOS 15.0, *)
-func showVirtualController(url: URL) {
+func showVirtualController(url: URL, ryuconfig: RyujinxEmulator.Configuration) {
     print("Showing virtual controller...")
     let config = GCVirtualController.Configuration()
     config.elements = [
@@ -114,9 +137,7 @@ func showVirtualController(url: URL) {
     g_gcVirtualController = GCVirtualController(configuration: config)
     g_gcVirtualController.connect { err in
         print("Controller connect: \(String(describing: err))")
-        DispatchQueue.main.async {
-            startEmulation(game: url)
-        }
+        startEmulation(game: url, config: ryuconfig)
     }
 }
 

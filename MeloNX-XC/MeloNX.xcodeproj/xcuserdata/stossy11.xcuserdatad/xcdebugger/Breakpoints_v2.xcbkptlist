@@ -3,4 +3,56 @@
    uuid = "64A8AF27-6696-4D7A-8C62-06216A95ECF0"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C2C839C6-26A1-468A-9479-A00FD57EA17C"
+            shouldBeEnabled = "Yes"
+            nameForDebugger = "ignore-sigusr1"
+            ignoreCount = "0"
+            continueAfterRunningActions = "Yes"
+            filePath = "MeloNX/Core/Ryujinx.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
+            landmarkName = "startWithRunLoop(config:)"
+            landmarkType = "7">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.DebuggerCommand">
+                  <ActionContent
+                     consoleCommand = "process handle SIGUSR1 -n true -p true -s false">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5A4DEE32-2E63-4404-BFDE-AD7F1337DA66"
+            shouldBeEnabled = "Yes"
+            nameForDebugger = "ignore-sigusr1"
+            ignoreCount = "0"
+            continueAfterRunningActions = "Yes"
+            filePath = "MeloNX/Core/Ryujinx.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
+            landmarkName = "startWithRunLoop(config:)"
+            landmarkType = "7">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.DebuggerCommand">
+                  <ActionContent
+                     consoleCommand = "process handle SIGUSR1 -n true -p true -s false">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

@@ -25,20 +25,23 @@ class RyujinxEmulator {
     private var isRunning = false
     private var emulationThread: Thread?
     
+    
+    
+    
     struct Configuration {
         let inputPath: String
-        let enableKeyboard: Bool // i don't know why i added this
+        let mainThread: Bool // i don't know why i added this
         let graphicsBackend: String
         var additionalArgs: [String]
         
         init(
             inputPath: String,
-            enableKeyboard: Bool = true,
+            mainThread: Bool = true,
             graphicsBackend: String = "Vulkan",
             additionalArgs: [String] = []
         ) {
             self.inputPath = inputPath
-            self.enableKeyboard = enableKeyboard
+            self.mainThread = mainThread
             self.graphicsBackend = graphicsBackend
             self.additionalArgs = additionalArgs
         }
@@ -107,7 +110,18 @@ class RyujinxEmulator {
             let port = Port()
             runLoop.add(port, forMode: .default)
             
-            //DispatchQueue.main.async {
+            print(config.mainThread ? "Running on the main thread" : "Running on the background thread")
+            if config.mainThread {
+                DispatchQueue.main.async {
+                    do {
+                        try Self.start(with: config)
+                    } catch {
+                        Self.log("Emulation failed to start: \(error)")
+                        self.isRunning = false
+                        return
+                    }
+                }
+            } else {
                 do {
                     try Self.start(with: config)
                 } catch {
@@ -115,13 +129,12 @@ class RyujinxEmulator {
                     self.isRunning = false
                     return
                 }
-            // }
+            }
             
             
             
             while self.isRunning && runLoop.run(mode: .default, before: .distantFuture) {
-                autoreleasepool {
-                }
+                autoreleasepool { }
             }
             
             
@@ -165,9 +178,9 @@ extension RyujinxEmulator.Configuration {
         
         args.append(inputPath)
         
-        if enableKeyboard {
-            args.append("--enable-keyboard")
-        }
+        // if enableKeyboard {
+            // args.append("--enable-keyboard")
+        // }
         
         args.append("--graphics-backend")
         args.append(graphicsBackend)
@@ -206,7 +219,7 @@ extension RyujinxEmulator.Configuration {
         
         return RyujinxEmulator.Configuration(
             inputPath: inputPath,
-            enableKeyboard: enableKeyboard,
+            mainThread: enableKeyboard,
             graphicsBackend: graphicsBackend,
             additionalArgs: additionalArgs
         )
