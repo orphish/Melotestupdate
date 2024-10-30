@@ -68,6 +68,7 @@ class RyujinxEmulator {
         // args.append(contentsOf: ["--fullscreen", "true"])
         args.append(contentsOf: ["--enable-debug-logs", "true"])
         args.append(contentsOf: ["--enable-trace-logs", "true"])
+        // args.append(contentsOf: ["--list-inputs-ids", "true"])
         args.append(contentsOf: ["--input-id-1", "1-47150005-05ac-0000-0100-00004f066d01"])
         // args.append("--input-path")
         
@@ -106,7 +107,7 @@ class RyujinxEmulator {
             let port = Port()
             runLoop.add(port, forMode: .default)
             
-            DispatchQueue.main.async {
+            //DispatchQueue.main.async {
                 do {
                     try Self.start(with: config)
                 } catch {
@@ -114,7 +115,7 @@ class RyujinxEmulator {
                     self.isRunning = false
                     return
                 }
-            }
+            // }
             
             
             

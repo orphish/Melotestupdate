@@ -52,7 +52,6 @@ struct ContentView: View {
 }
 
 func startEmulation(game: URL) {
-    
     setenv("DOTNET_EnableDiagnostics", "0", 1)
     setenv("HOME", String(validatingUTF8: getenv("HOME"))! + "/Documents", 1)
     setenv("MVK_CONFIG_LOG_LEVEL", "4", 1)
@@ -63,12 +62,20 @@ func startEmulation(game: URL) {
         graphicsBackend: "Vulkan"
     )
     
-    DispatchQueue.main.async {
-        patchMakeKeyAndVisible()
-        SDL_SetMainReady()
-        SDL_iPhoneSetEventPump(SDL_TRUE)
-        SDL_Init(SDL_INIT_VIDEO)
+    patchMakeKeyAndVisible()
+    SDL_SetMainReady()
+    SDL_iPhoneSetEventPump(SDL_TRUE)
+    print(SDL_Init(SDL_INIT_VIDEO))
+    
+    let window = SDL_CreateWindow("Ryujinx", Int32(SDL_WINDOWPOS_CENTERED_MASK), Int32(SDL_WINDOWPOS_CENTERED_MASK), 640, 480, SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue)
+    if window == nil {
+        print("Error creating SDL window: \(String(cString: SDL_GetError()))")
+    } else {
+        print("SDL Window created successfully!")
     }
+    
+    // SDL_Init(SDL_INIT_VIDEO)
+    
     let emulator = RyujinxEmulator()
     do {
         try emulator.startWithRunLoop(config: config)
@@ -87,10 +94,11 @@ func patchMakeKeyAndVisible() {
 extension UIWindow {
     @objc func wdb_makeKeyAndVisible() {
         print("Making window key and visible...")
-        self.windowScene = (UIApplication.shared.connectedScenes.first! as! UIWindowScene)
+        if #available(iOS 13.0, *) {
+            self.windowScene = (UIApplication.shared.connectedScenes.first! as! UIWindowScene)
+        }
         self.wdb_makeKeyAndVisible()
         theWindow = self
-        reconnectVirtualController()
     }
 }
 
@@ -106,7 +114,9 @@ func showVirtualController(url: URL) {
     g_gcVirtualController = GCVirtualController(configuration: config)
     g_gcVirtualController.connect { err in
         print("Controller connect: \(String(describing: err))")
-        startEmulation(game: url)
+        DispatchQueue.main.async {
+            startEmulation(game: url)
+        }
     }
 }
 

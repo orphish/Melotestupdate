@@ -196,7 +196,7 @@ namespace Ryujinx.Headless.SDL2
                 throw new Exception(errorMessage);
             }
 
-            SetWindowIcon();
+            // SetWindowIcon();
 
             _windowId = SDL_GetWindowID(WindowHandle);
             SDL2Driver.Instance.RegisterWindow(_windowId, HandleWindowEvent);
@@ -218,6 +218,15 @@ namespace Ryujinx.Headless.SDL2
                             Height = evnt.window.data2;
                             Renderer?.Window.SetSize(Width, Height);
                             MouseDriver.SetClientSize(Width, Height);
+                            // if (Renderer != null && Renderer.Window != null)
+                            // {
+                            //     Renderer.Window.SetSize(Width, Height);
+                            // }
+                            // else
+                            // {
+                            //     Logger.Error?.Print(LogClass.Application, "Renderer or Window is null.");
+                            // }
+                            // MouseDriver.SetClientSize(Width, Height);
                         }
                         break;
 

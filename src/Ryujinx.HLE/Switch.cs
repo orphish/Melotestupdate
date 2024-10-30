@@ -52,6 +52,7 @@ namespace Ryujinx.HLE
             Gpu               = new GpuContext(Configuration.GpuRenderer);
             System            = new HOS.Horizon(this);
             Statistics        = new PerformanceStatistics();
+            Hid               = new Hid(this, System.HidStorage);
             Processes         = new ProcessLoader(this);
             TamperMachine     = new TamperMachine();
 
