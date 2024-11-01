@@ -16,9 +16,24 @@ struct ContentView: View {
     @State var gameUrl: URL?
     @State var showFileImporter: Bool = false
     @State var emulationStarted: Bool = false
-    @State var mainThread: Bool = false
+    @State var mainThread: Bool = true
     
     @State var debugmode: Int = 0
+    
+    init() {
+        SDL_SetMainReady()
+        SDL_iPhoneSetEventPump(SDL_TRUE)
+        
+        
+        if SDL_Init(SDL_INIT_VIDEO) < 0 {
+            fatalError("Unable to initialize SDL: \(String(cString: SDL_GetError()))")
+        }
+        
+        if SDL_Vulkan_LoadLibrary(nil) != 0 {
+            fatalError("Failed to load Vulkan library: \(String(cString: SDL_GetError()))")
+        }
+    }
+    
     
     var body: some View {
         ZStack {
@@ -30,11 +45,13 @@ struct ContentView: View {
                         inputPath: gameUrl.path,
                         mainThread: mainThread,
                         graphicsBackend: "Vulkan",
-                        additionalArgs: ["--display-id", String(displayid)]
+                        additionalArgs: [
+                            "--display-id", String(displayid),
+                            "--fullscreen", "true"
+                        ]
                     )
                     
-                    
-                    
+                     
                     showVirtualController(url: gameUrl, ryuconfig: config)
                 }
             }
@@ -92,14 +109,6 @@ func startEmulation(game: URL, config: RyujinxEmulator.Configuration) {
     let config = config
     
     // patchMakeKeyAndVisible()
-    
-    let window = SDL_CreateWindow("Ryujinx", Int32(SDL_WINDOWPOS_CENTERED_MASK), Int32(SDL_WINDOWPOS_CENTERED_MASK), 640, 480, SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue)
-    if window == nil {
-        print("Error creating SDL window: \(String(cString: SDL_GetError()))")
-    } else {
-        print("SDL Window created successfully!")
-    }
-    
     // SDL_Init(SDL_INIT_VIDEO)
     
     let emulator = RyujinxEmulator()

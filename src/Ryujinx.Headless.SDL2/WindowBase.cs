@@ -184,8 +184,10 @@ namespace Ryujinx.Headless.SDL2
                 DefaultFlags = SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI;
                 FullscreenFlag = SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP;
             }
-
+            
             WindowHandle = SDL_GetWindowFromID(1);
+            Logger.Info?.Print(LogClass.Gpu, $"DisplayID: \"{WindowHandle}\"");
+
             //SDL_CreateWindow($"Ryujinx {Program.Version}{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}", SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), Width, Height, DefaultFlags | FullscreenFlag | GetWindowFlags());
 
             if (WindowHandle == IntPtr.Zero)
@@ -215,10 +217,10 @@ namespace Ryujinx.Headless.SDL2
                         // As we don't need this to fire in either case we can test for fullscreen.
                         if (!IsFullscreen && !IsExclusiveFullscreen)
                         {
-                            Width = evnt.window.data1;
-                            Height = evnt.window.data2;
-                            Renderer?.Window.SetSize(Width, Height);
-                            MouseDriver.SetClientSize(Width, Height);
+                            // Width = evnt.window.data1;
+                            // Height = evnt.window.data2;
+                            // Renderer?.Window.SetSize(Width, Height);
+                            // MouseDriver.SetClientSize(Width, Height);
                             // if (Renderer != null && Renderer.Window != null)
                             // {
                             //     Renderer.Window.SetSize(Width, Height);

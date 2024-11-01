@@ -42,25 +42,21 @@ class VulkanSDLView: UIView {
     }
 
     private func initializeSDL() {
-        
-        SDL_SetMainReady()
-        SDL_iPhoneSetEventPump(SDL_TRUE)
-        // print(SDL_Init(SDL_INIT_VIDEO))
         // Initialize SDL with video support
-        if SDL_Init(SDL_INIT_VIDEO) < 0 {
-            print("Unable to initialize SDL: \(String(cString: SDL_GetError()))")
-            return
-        }
+        
+        
 
         // Create an SDL window with Metal support
-        sdlWindow = SDL_CreateWindow(
-            "Ryujinx",
-            Int32(SDL_WINDOWPOS_CENTERED_MASK),
-            Int32(SDL_WINDOWPOS_CENTERED_MASK),
-            Int32(frame.width),
-            Int32(frame.height),
-            SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue | SDL_WINDOW_METAL.rawValue
-        )
+        DispatchQueue.main.async { [self] in
+            sdlWindow = SDL_CreateWindow(
+                "Ryujinx",
+                Int32(SDL_WINDOWPOS_CENTERED_MASK),
+                Int32(SDL_WINDOWPOS_CENTERED_MASK),
+                Int32(frame.width),
+                Int32(frame.height),
+                SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue | SDL_WINDOW_VULKAN.rawValue
+            )
+        }
 
         guard sdlWindow != nil else {
             print("Error creating SDL window: \(String(cString: SDL_GetError()))")
