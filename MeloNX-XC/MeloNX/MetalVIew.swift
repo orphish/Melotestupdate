@@ -8,6 +8,90 @@
 import SwiftUI
 import Metal
 import MetalKit
+import UIKit
+import SDL2
+
+
+
+struct VulkanSDLViewRepresentable: UIViewRepresentable {
+    
+    let configure: (Uint32) -> Void
+    func makeUIView(context: Context) -> VulkanSDLView {
+        let view = VulkanSDLView(frame: .zero)
+        configure(SDL_GetWindowID(view.sdlWindow))
+        return view
+    }
+
+    func updateUIView(_ uiView: VulkanSDLView, context: Context) {
+        // Handle any updates if needed
+    }
+}
+
+class VulkanSDLView: UIView {
+    var sdlWindow: OpaquePointer?
+    var metalView: UnsafeMutableRawPointer?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        initializeSDL()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        initializeSDL()
+    }
+
+    private func initializeSDL() {
+        
+        SDL_SetMainReady()
+        SDL_iPhoneSetEventPump(SDL_TRUE)
+        // print(SDL_Init(SDL_INIT_VIDEO))
+        // Initialize SDL with video support
+        if SDL_Init(SDL_INIT_VIDEO) < 0 {
+            print("Unable to initialize SDL: \(String(cString: SDL_GetError()))")
+            return
+        }
+
+        // Create an SDL window with Metal support
+        sdlWindow = SDL_CreateWindow(
+            "Ryujinx",
+            Int32(SDL_WINDOWPOS_CENTERED_MASK),
+            Int32(SDL_WINDOWPOS_CENTERED_MASK),
+            Int32(frame.width),
+            Int32(frame.height),
+            SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue | SDL_WINDOW_METAL.rawValue
+        )
+
+        guard sdlWindow != nil else {
+            print("Error creating SDL window: \(String(cString: SDL_GetError()))")
+            return
+        }
+
+        // Create SDL Metal view and attach to this UIView
+        metalView = SDL_Metal_CreateView(sdlWindow)
+        if metalView == nil {
+            print("Failed to create SDL Metal view.")
+            return
+        }
+
+        if let metalLayerPointer = SDL_Metal_GetLayer(metalView) {
+            let metalLayer = Unmanaged<CAMetalLayer>.fromOpaque(metalLayerPointer).takeUnretainedValue()
+            metalLayer.device = MTLCreateSystemDefaultDevice()
+            metalLayer.pixelFormat = .bgra8Unorm
+            layer.addSublayer(metalLayer)
+        }
+    }
+
+    deinit {
+        if let metalView = metalView {
+            SDL_Metal_DestroyView(metalView)
+        }
+        if let sdlWindow = sdlWindow {
+            SDL_DestroyWindow(sdlWindow)
+        }
+        SDL_Quit()
+    }
+}
 
 struct MetalView: UIViewRepresentable {
     let device: MTLDevice?

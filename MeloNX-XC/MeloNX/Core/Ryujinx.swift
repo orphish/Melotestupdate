@@ -8,12 +8,6 @@
 import Foundation
 import SwiftUI
 
-// Create a bridging header for the C function
-private let ryujinxMain: @convention(c) (Int32, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32 = {
-    let sym = dlsym(dlopen("Ryujinx.Headless.SDL2.dylib", RTLD_NOW), "main_ryujinx_sdl")
-    return unsafeBitCast(sym, to: (@convention(c) (Int32, UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>) -> Int32).self)
-}()
-
 enum RyujinxError: Error {
     case libraryLoadError
     case executionError(code: Int32)
@@ -89,7 +83,7 @@ class RyujinxEmulator {
         var argvPtrs = cArgs
         
         
-        let result = ryujinxMain(Int32(args.count), &argvPtrs)
+        let result = main_ryujinx_sdl(Int32(args.count), &argvPtrs)
         
         if result != 0 {
             throw RyujinxError.executionError(code: result)

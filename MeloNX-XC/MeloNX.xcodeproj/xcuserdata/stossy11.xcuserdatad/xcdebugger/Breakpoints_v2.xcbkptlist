@@ -15,8 +15,8 @@
             filePath = "MeloNX/Core/Ryujinx.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "startWithRunLoop(config:)"
             landmarkType = "7">
             <Actions>
@@ -40,8 +40,8 @@
             filePath = "MeloNX/Core/Ryujinx.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
             landmarkName = "startWithRunLoop(config:)"
             landmarkType = "7">
             <Actions>

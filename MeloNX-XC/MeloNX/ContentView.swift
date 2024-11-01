@@ -22,7 +22,22 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            
+            if let gameUrl, emulationStarted {
+                VulkanSDLViewRepresentable { displayid in
+                    gameUrl.startAccessingSecurityScopedResource()
+                    
+                    let config = RyujinxEmulator.Configuration(
+                        inputPath: gameUrl.path,
+                        mainThread: mainThread,
+                        graphicsBackend: "Vulkan",
+                        additionalArgs: ["--display-id", String(displayid)]
+                    )
+                    
+                    
+                    
+                    showVirtualController(url: gameUrl, ryuconfig: config)
+                }
+            }
             
             VStack {
                 Text("NX iOS")
@@ -50,15 +65,6 @@ struct ContentView: View {
                 if let gameUrl {
                     Button {
                         emulationStarted = true
-                        gameUrl.startAccessingSecurityScopedResource()
-                        
-                        let config = RyujinxEmulator.Configuration(
-                            inputPath: gameUrl.path,
-                            mainThread: mainThread,
-                            graphicsBackend: "Vulkan"
-                        )
-                        
-                        showVirtualController(url: gameUrl, ryuconfig: config)
                     } label: {
                         Text("Go!")
                     }
@@ -86,9 +92,6 @@ func startEmulation(game: URL, config: RyujinxEmulator.Configuration) {
     let config = config
     
     // patchMakeKeyAndVisible()
-    SDL_SetMainReady()
-    SDL_iPhoneSetEventPump(SDL_TRUE)
-    print(SDL_Init(SDL_INIT_VIDEO))
     
     let window = SDL_CreateWindow("Ryujinx", Int32(SDL_WINDOWPOS_CENTERED_MASK), Int32(SDL_WINDOWPOS_CENTERED_MASK), 640, 480, SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue)
     if window == nil {
