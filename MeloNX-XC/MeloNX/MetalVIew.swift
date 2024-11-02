@@ -18,8 +18,11 @@ struct VulkanSDLViewRepresentable: UIViewRepresentable {
     let configure: (Uint32) -> Void
     func makeUIView(context: Context) -> VulkanSDLView {
         let view = VulkanSDLView(frame: .zero)
-        configure(SDL_GetWindowID(view.sdlWindow))
+        DispatchQueue.main.async { [self] in
+            configure(SDL_GetWindowID(view.sdlWindow))
+        }
         return view
+            
     }
 
     func updateUIView(_ uiView: VulkanSDLView, context: Context) {
@@ -33,19 +36,24 @@ class VulkanSDLView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        initializeSDL()
+        DispatchQueue.main.async { [self] in
+            initializeSDL()
+        }
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        initializeSDL()
+        DispatchQueue.main.async { [self] in
+            initializeSDL()
+        }
+        
     }
 
     private func initializeSDL() {
         // Initialize SDL with video support
         
         
-
+        
         // Create an SDL window with Metal support
         DispatchQueue.main.async { [self] in
             sdlWindow = SDL_CreateWindow(
@@ -57,25 +65,31 @@ class VulkanSDLView: UIView {
                 SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue | SDL_WINDOW_VULKAN.rawValue
             )
         }
-
+        
+        
         guard sdlWindow != nil else {
             print("Error creating SDL window: \(String(cString: SDL_GetError()))")
             return
         }
-
+        
         // Create SDL Metal view and attach to this UIView
-        metalView = SDL_Metal_CreateView(sdlWindow)
-        if metalView == nil {
-            print("Failed to create SDL Metal view.")
-            return
+        DispatchQueue.main.async { [self] in
+            metalView = SDL_Metal_CreateView(sdlWindow)
+            if metalView == nil {
+                print("Failed to create SDL Metal view.")
+                return
+            }
         }
-
+        
         if let metalLayerPointer = SDL_Metal_GetLayer(metalView) {
             let metalLayer = Unmanaged<CAMetalLayer>.fromOpaque(metalLayerPointer).takeUnretainedValue()
             metalLayer.device = MTLCreateSystemDefaultDevice()
             metalLayer.pixelFormat = .bgra8Unorm
-            layer.addSublayer(metalLayer)
+            DispatchQueue.main.async { [self] in
+                layer.addSublayer(metalLayer)
+            }
         }
+        
     }
 
     deinit {

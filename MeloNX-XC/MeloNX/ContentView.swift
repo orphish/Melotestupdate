@@ -41,20 +41,23 @@ struct ContentView: View {
         ZStack {
             if let gameUrl, emulationStarted {
                 VulkanSDLViewRepresentable { displayid in
-                    gameUrl.startAccessingSecurityScopedResource()
-                    
-                    let config = RyujinxEmulator.Configuration(
-                        inputPath: gameUrl.path,
-                        mainThread: mainThread,
-                        graphicsBackend: "Vulkan",
-                        additionalArgs: [
-                            "--display-id", String(displayid),
-                            "--fullscreen", "true"
-                        ]
-                    )
-                    
-                     
-                    showVirtualController(url: gameUrl, ryuconfig: config)
+                    DispatchQueue.main.async {
+                        
+                        gameUrl.startAccessingSecurityScopedResource()
+                        
+                        let config = RyujinxEmulator.Configuration(
+                            inputPath: gameUrl.path,
+                            mainThread: mainThread,
+                            graphicsBackend: "Vulkan",
+                            additionalArgs: [
+                                "--display-id", String(displayid),
+                                "--fullscreen", "true"
+                            ]
+                        )
+                        
+                        
+                        showVirtualController(url: gameUrl, ryuconfig: config)
+                    }
                 }
             }
             
@@ -110,32 +113,38 @@ func startEmulation(game: URL, config: RyujinxEmulator.Configuration) {
     
     let config = config
     
-    // patchMakeKeyAndVisible()
+    patchMakeKeyAndVisible()
     // SDL_Init(SDL_INIT_VIDEO)
-    
-    let emulator = RyujinxEmulator()
-    do {
-        try emulator.startWithRunLoop(config: config)
-    } catch {
-        print(error)
+    DispatchQueue.main.async {
+        let emulator = RyujinxEmulator()
+        do {
+            try emulator.startWithRunLoop(config: config)
+        } catch {
+            print(error)
+        }
     }
 }
 
 func patchMakeKeyAndVisible() {
-  let uiwindowClass = UIWindow.self
-  let m1 = class_getInstanceMethod(uiwindowClass, #selector(UIWindow.makeKeyAndVisible))!
-  let m2 = class_getInstanceMethod(uiwindowClass, #selector(UIWindow.wdb_makeKeyAndVisible))!
-  method_exchangeImplementations(m1, m2)
+    DispatchQueue.main.async {
+        let uiwindowClass = UIWindow.self
+        let m1 = class_getInstanceMethod(uiwindowClass, #selector(UIWindow.makeKeyAndVisible))!
+        let m2 = class_getInstanceMethod(uiwindowClass, #selector(UIWindow.wdb_makeKeyAndVisible))!
+        method_exchangeImplementations(m1, m2)
+    }
 }
 
 extension UIWindow {
     @objc func wdb_makeKeyAndVisible() {
-        print("Making window key and visible...")
-        if #available(iOS 13.0, *) {
-            self.windowScene = (UIApplication.shared.connectedScenes.first! as! UIWindowScene)
+        DispatchQueue.main.async {
+            
+            print("Making window key and visible...")
+            if #available(iOS 13.0, *) {
+                self.windowScene = (UIApplication.shared.connectedScenes.first! as! UIWindowScene)
+            }
+            self.wdb_makeKeyAndVisible()
+            theWindow = self
         }
-        self.wdb_makeKeyAndVisible()
-        theWindow = self
     }
 }
 
@@ -143,15 +152,20 @@ extension UIWindow {
 var g_gcVirtualController: GCVirtualController!
 @available(iOS 15.0, *)
 func showVirtualController(url: URL, ryuconfig: RyujinxEmulator.Configuration) {
-    print("Showing virtual controller...")
-    let config = GCVirtualController.Configuration()
-    config.elements = [
-        GCInputDirectionalDpad, GCInputButtonA, GCInputButtonB, GCInputButtonX, GCInputButtonY,
-    ]
-    g_gcVirtualController = GCVirtualController(configuration: config)
-    g_gcVirtualController.connect { err in
-        print("Controller connect: \(String(describing: err))")
-        startEmulation(game: url, config: ryuconfig)
+    DispatchQueue.main.async {
+        
+        print("Showing virtual controller...")
+        let config = GCVirtualController.Configuration()
+        config.elements = [
+            GCInputDirectionalDpad, GCInputButtonA, GCInputButtonB, GCInputButtonX, GCInputButtonY,
+        ]
+        g_gcVirtualController = GCVirtualController(configuration: config)
+        g_gcVirtualController.connect { err in
+            print("Controller connect: \(String(describing: err))")
+            DispatchQueue.main.async {
+                startEmulation(game: url, config: ryuconfig)
+            }
+        }
     }
 }
 

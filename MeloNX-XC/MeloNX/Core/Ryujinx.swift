@@ -98,6 +98,16 @@ class RyujinxEmulator {
         
         isRunning = true
         
+        DispatchQueue.main.async {
+            do {
+                try Self.start(with: config)
+            } catch {
+                Self.log("Emulation failed to start: \(error)")
+                self.isRunning = false
+                return
+            }
+        }
+        
         emulationThread = Thread {
             let runLoop = RunLoop.current
             
@@ -105,6 +115,7 @@ class RyujinxEmulator {
             runLoop.add(port, forMode: .default)
             
             print(config.mainThread ? "Running on the main thread" : "Running on the background thread")
+            /*
             if config.mainThread {
                 DispatchQueue.main.async {
                     do {
@@ -124,6 +135,8 @@ class RyujinxEmulator {
                     return
                 }
             }
+             */
+            
             
             
             
@@ -138,7 +151,7 @@ class RyujinxEmulator {
         emulationThread?.name = "RyujinxEmulationThread"
         emulationThread?.qualityOfService = .userInteractive
         emulationThread?.threadPriority = 0.9
-        emulationThread?.start()
+        // emulationThread?.start()
     }
     
     func quickStart(romPath: String) throws {
