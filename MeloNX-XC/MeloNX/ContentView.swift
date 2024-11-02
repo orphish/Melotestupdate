@@ -24,15 +24,7 @@ struct ContentView: View {
         DispatchQueue.main.async {
             SDL_SetMainReady()
             SDL_iPhoneSetEventPump(SDL_TRUE)
-            
-            
-            if SDL_Init(SDL_INIT_VIDEO) < 0 {
-                fatalError("Unable to initialize SDL: \(String(cString: SDL_GetError()))")
-            }
-            
-            if SDL_Vulkan_LoadLibrary(nil) != 0 {
-                fatalError("Failed to load Vulkan library: \(String(cString: SDL_GetError()))")
-            }
+           
         }
     }
     
@@ -40,24 +32,19 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if let gameUrl, emulationStarted {
-                VulkanSDLViewRepresentable { displayid in
-                    DispatchQueue.main.async {
-                        
-                        gameUrl.startAccessingSecurityScopedResource()
-                        
-                        let config = RyujinxEmulator.Configuration(
-                            inputPath: gameUrl.path,
-                            mainThread: mainThread,
-                            graphicsBackend: "Vulkan",
-                            additionalArgs: [
-                                "--display-id", String(displayid),
-                                "--fullscreen", "true"
-                            ]
-                        )
-                        
-                        
-                        showVirtualController(url: gameUrl, ryuconfig: config)
-                    }
+                VulkanSDLViewRepresentable { // displayid in
+                    let config = RyujinxEmulator.Configuration(
+                        inputPath: gameUrl.path,
+                        mainThread: mainThread,
+                        graphicsBackend: "Vulkan",
+                        additionalArgs: [
+                            //"--display-id", String(displayid),
+                            // "--fullscreen", "true"
+                        ]
+                    )
+                    
+                    
+                    showVirtualController(url: gameUrl, ryuconfig: config)
                 }
             }
             

@@ -15,12 +15,12 @@ import SDL2
 
 struct VulkanSDLViewRepresentable: UIViewRepresentable {
     
-    let configure: (Uint32) -> Void
+    let configure: () -> Void
     func makeUIView(context: Context) -> VulkanSDLView {
+        
+        configure()
+        
         let view = VulkanSDLView(frame: .zero)
-        DispatchQueue.main.async { [self] in
-            configure(SDL_GetWindowID(view.sdlWindow))
-        }
         return view
             
     }
@@ -56,14 +56,7 @@ class VulkanSDLView: UIView {
         
         // Create an SDL window with Metal support
         DispatchQueue.main.async { [self] in
-            sdlWindow = SDL_CreateWindow(
-                "Ryujinx",
-                Int32(SDL_WINDOWPOS_CENTERED_MASK),
-                Int32(SDL_WINDOWPOS_CENTERED_MASK),
-                Int32(frame.width),
-                Int32(frame.height),
-                SDL_WINDOW_SHOWN.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue | SDL_WINDOW_VULKAN.rawValue
-            )
+            sdlWindow = SDL_GetWindowFromID(1)
         }
         
         
@@ -81,11 +74,11 @@ class VulkanSDLView: UIView {
             }
         }
         
-        if let metalLayerPointer = SDL_Metal_GetLayer(metalView) {
-            let metalLayer = Unmanaged<CAMetalLayer>.fromOpaque(metalLayerPointer).takeUnretainedValue()
-            metalLayer.device = MTLCreateSystemDefaultDevice()
-            metalLayer.pixelFormat = .bgra8Unorm
-            DispatchQueue.main.async { [self] in
+        DispatchQueue.main.async { [self] in
+            if let metalLayerPointer = SDL_Metal_GetLayer(metalView) {
+                let metalLayer = Unmanaged<CAMetalLayer>.fromOpaque(metalLayerPointer).takeUnretainedValue()
+                metalLayer.device = MTLCreateSystemDefaultDevice()
+                // metalLayer.pixelFormat = .bgra8Unorm
                 layer.addSublayer(metalLayer)
             }
         }

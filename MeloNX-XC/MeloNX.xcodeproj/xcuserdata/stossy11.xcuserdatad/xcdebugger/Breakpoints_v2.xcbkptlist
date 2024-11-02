@@ -27,6 +27,36 @@
                   </ActionContent>
                </BreakpointActionProxy>
             </Actions>
+            <Locations>
+               <Location
+                  uuid = "C2C839C6-26A1-468A-9479-A00FD57EA17C - e09e330dd17da5b1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MeloNX.RyujinxEmulator.startWithRunLoop(config: MeloNX.RyujinxEmulator.Configuration) throws -&gt; ()"
+                  moduleName = "MeloNX.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/stossy11/MeloNX/MeloNX-XC/MeloNX/Core/Ryujinx.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "111"
+                  endingLineNumber = "111">
+               </Location>
+               <Location
+                  uuid = "C2C839C6-26A1-468A-9479-A00FD57EA17C - a8ffb78cb80274ea"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 @Sendable () -&gt; () in MeloNX.RyujinxEmulator.startWithRunLoop(config: MeloNX.RyujinxEmulator.Configuration) throws -&gt; ()"
+                  moduleName = "MeloNX.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/stossy11/MeloNX/MeloNX-XC/MeloNX/Core/Ryujinx.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "112"
+                  endingLineNumber = "112">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
