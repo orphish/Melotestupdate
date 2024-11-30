@@ -130,7 +130,7 @@ namespace Ryujinx.Headless.SDL2
                 };
             }
 
-            if (OperatingSystem.IsMacOS())
+            if (OperatingSystem.IsMacOS() || OperatingSystem.IsIOS())
             {
                 MVKInitialization.InitializeResolver();
             }
