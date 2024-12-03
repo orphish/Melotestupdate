@@ -104,6 +104,9 @@ namespace Ryujinx.Headless.SDL2
             ForceDpiAware.Windows();
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
             Silk.NET.Core.Loader.SearchPathContainer.Platform = Silk.NET.Core.Loader.UnderlyingPlatform.MacOS;
 
             if (!OperatingSystem.IsIOS())

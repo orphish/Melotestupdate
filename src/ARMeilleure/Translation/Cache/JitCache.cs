@@ -18,7 +18,7 @@ namespace ARMeilleure.Translation.Cache
 
         private const int CodeAlignment = 4; // Bytes.
         private const int CacheSize = 2047 * 1024 * 1024;
-
+        private const int CacheSizeIOS = 512 * 1024 * 1024;
         private static ReservedRegion _jitRegion;
         private static JitCacheInvalidation _jitCacheInvalidator;
 
@@ -49,7 +49,7 @@ namespace ARMeilleure.Translation.Cache
 
                 _jitRegion = new ReservedRegion(allocator, CacheSize);
 
-                if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS())
+                if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS() && !OperatingSystem.IsIOS())
                 {
                     _jitCacheInvalidator = new JitCacheInvalidation(allocator);
                 }
@@ -77,7 +77,15 @@ namespace ARMeilleure.Translation.Cache
 
                 nint funcPtr = _jitRegion.Pointer + funcOffset;
 
-                if (OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
+                
+                if (OperatingSystem.IsIOS())
+                {
+                    Marshal.Copy(code, 0, funcPtr, code.Length);
+                    ReprotectAsExecutable(funcOffset, code.Length);
+
+                    JitSupportDarwinAot.Invalidate(funcPtr, (ulong)code.Length);
+                }
+                else if (OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
                 {
                     unsafe
                     {
