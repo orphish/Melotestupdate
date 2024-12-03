@@ -1,6 +1,7 @@
 using Ryujinx.Common.Memory;
 using Ryujinx.Common.Utilities;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -133,6 +134,7 @@ namespace Ryujinx.Common
 
         private static (Assembly, string) ResolveManifestPath(string filename)
         {
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             var segments = filename.Split('/', 2, StringSplitOptions.RemoveEmptyEntries);
 
             if (segments.Length >= 2)

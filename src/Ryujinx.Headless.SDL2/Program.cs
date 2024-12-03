@@ -42,6 +42,7 @@ using ConfigGamepadInputId = Ryujinx.Common.Configuration.Hid.Controller.Gamepad
 using ConfigStickInputId = Ryujinx.Common.Configuration.Hid.Controller.StickInputId;
 using Key = Ryujinx.Common.Configuration.Hid.Key;
 using System.Linq;
+using System.Globalization;
 
 public class GamepadInfo
 {
@@ -97,11 +98,11 @@ namespace Ryujinx.Headless.SDL2
 
         static void Main(string[] args)
         {
-            Silk.NET.Core.Loader.SearchPathContainer.Platform = Silk.NET.Core.Loader.UnderlyingPlatform.MacOS;
 
             Version = "1";
             // Make process DPI aware for proper window sizing on high-res screens.
             ForceDpiAware.Windows();
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
             Silk.NET.Core.Loader.SearchPathContainer.Platform = Silk.NET.Core.Loader.UnderlyingPlatform.MacOS;
 

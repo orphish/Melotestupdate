@@ -12,29 +12,21 @@ struct SettingsView: View {
     @Binding var MoltenVKSettings: [MoltenVKSettings]
     
     var memoryManagerModes = [
-        ("HostMappedUnsafe", "Host Unchecked (fastest, unstable / unsafe)"),
         ("HostMapped", "Host (fast)"),
-        ("SoftwarePageTable", "Software")
-    ]
-    
-    var vsyncModes = [
-        ("Switch", "Switch"),
-        ("Unbound", "Unbound"),
+        ("HostMappedUnsafe", "Host Unchecked (fast, unstable / unsafe)"),
+        ("SoftwarePageTable", "Software (slow)"),
     ]
     
     @AppStorage("RyuDemoControls") var ryuDemo: Bool = false
+    
     @AppStorage("MTL_HUD_ENABLED") var metalHUDEnabled: Bool = false
     
     var body: some View {
         ScrollView {
             VStack {
-                Section(header: Text("Graphics and Performance").bold()) {
+                Section(header: Title("Graphics and Performance")) {
                     Toggle("Ryujinx Fullscreen", isOn: $config.fullscreen)
-                    Picker("V-Sync", selection: $config.vsync) {
-                        ForEach(vsyncModes, id: \.0) { key, displayName in
-                            Text(displayName).tag(key)
-                        }
-                    }
+                    Toggle("Disable V-Sync", isOn: $config.disableVSync)
                     Toggle("Disable Shader Cache", isOn: $config.disableShaderCache)
                     Toggle("Enable Texture Recompression", isOn: $config.enableTextureRecompression)
                     Toggle("Disable Docked Mode", isOn: $config.disableDockedMode)
@@ -49,20 +41,18 @@ struct SettingsView: View {
                         }
                 }
                 
-                Section(header: Text("Input Settings").bold()) {
+                Section(header: Title("Input Settings")) {
                     Toggle("List Input IDs", isOn: $config.listinputids)
                     Toggle("Nintendo Controller Layout", isOn: $config.nintendoinput)
                     Toggle("Ryujinx Demo On-Screen Controller", isOn: $ryuDemo)
                     // Toggle("Host Mapped Memory", isOn: $config.hostMappedMemory)
-                    Toggle("Disable Docked Mode", isOn: $config.disableDockedMode)
                 }
                 
-                Section(header: Text("Logging Settings").bold()) {
+                Section(header: Title("Logging Settings")) {
                     Toggle("Enable Debug Logs", isOn: $config.debuglogs)
                     Toggle("Enable Trace Logs", isOn: $config.tracelogs)
                 }
-                
-                Section(header: Text("CPU Mode").bold()) {
+                Section(header: Title("CPU Mode")) {
                     HStack {
                         Spacer()
                         Picker("Memory Manager Mode", selection: $config.memoryManagerMode) {
@@ -74,11 +64,9 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Network").bold()) {
-                    Toggle("Enable Ryujinx LDN", isOn: $config.ryuLDN)
-                }
                 
-                Section(header: Text("Additional Settings")) {
+                
+                Section(header: Title("Additional Settings")) {
                     //TextField("Game Path", text: $config.gamepath)
                     
                     Text("PageSize \(String(Int(getpagesize())))")
@@ -93,8 +81,8 @@ struct SettingsView: View {
                     ))
                 }
             }
+            .padding()
         }
-        .padding()
         .onAppear {
             if let configs = loadSettings() {
                 self.config = configs
@@ -174,5 +162,22 @@ extension NumberFormatter {
         formatter.minimumFractionDigits = 2
         formatter.allowsFloats = true
         return formatter
+    }
+}
+
+
+struct Title: View {
+    let string: String
+    
+    init(_ string: String) {
+        self.string = string
+    }
+    
+    var body: some View {
+        VStack {
+            Text(string)
+                .font(.title2)
+            Divider()
+        }
     }
 }

@@ -11,8 +11,8 @@ import SDL2
 import GameController
 
 struct Controller: Identifiable, Hashable {
-    let id: String
-    let name: String
+    var id: String
+    var name: String
 }
 
 struct iOSNav<Content: View>: View {
@@ -45,11 +45,11 @@ class Ryujinx {
         var debuglogs: Bool
         var tracelogs: Bool
         var nintendoinput: Bool
-        var ryuLDN: Bool
+        var enableInternet: Bool
         var listinputids: Bool
         var fullscreen: Bool
         var memoryManagerMode: String
-        var vsync: String
+        var disableVSync: Bool
         var disableShaderCache: Bool
         var disableDockedMode: Bool
         var enableTextureRecompression: Bool
@@ -60,14 +60,14 @@ class Ryujinx {
              inputids: [String] = [],
              debuglogs: Bool = false,
              tracelogs: Bool = false,
-             nintendoinput: Bool = true,
-             ryuLDN: Bool = false,
              listinputids: Bool = false,
              fullscreen: Bool = true,
-             memoryManagerMode: String = "HostMappedUnsafe",
-             vsync: String = "Switch",
+             memoryManagerMode: String = "HostMapped",
+             disableVSync: Bool = false,
              disableShaderCache: Bool = false,
              disableDockedMode: Bool = false,
+             nintendoinput: Bool = true,
+             enableInternet: Bool = false,
              enableTextureRecompression: Bool = true,
              additionalArgs: [String] = [],
              resscale: Float = 1.00
@@ -76,17 +76,17 @@ class Ryujinx {
             self.inputids = inputids
             self.debuglogs = debuglogs
             self.tracelogs = tracelogs
-            self.nintendoinput = nintendoinput
-            self.ryuLDN = ryuLDN
             self.listinputids = listinputids
             self.fullscreen = fullscreen
-            self.vsync = vsync
+            self.disableVSync = disableVSync
             self.disableShaderCache = disableShaderCache
             self.disableDockedMode = disableDockedMode
             self.enableTextureRecompression = enableTextureRecompression
             self.additionalArgs = additionalArgs
             self.memoryManagerMode = memoryManagerMode
             self.resscale = resscale
+            self.nintendoinput = nintendoinput
+            self.enableInternet = enableInternet
         }
     }
 
@@ -157,15 +157,17 @@ class Ryujinx {
             args.append(contentsOf: ["--resolution-scale", String(config.resscale)])
         }
         
-        // Adding default args directly into additionalArgs
         if config.nintendoinput {
-//            args.append("--correct-ons-controller")
+            // args.append("--correct-ons-controller")
+        }
+        if config.enableInternet {
+            args.append("--enable-internet-connection")
         }
         
-        if config.ryuLDN {
-            args.append("--lan-interface-id LdnRyu")
+        // Adding default args directly into additionalArgs
+        if config.disableVSync {
+            // args.append("--disable-vsync")
         }
-        
         if config.disableShaderCache {
             args.append("--disable-shader-cache")
         }
@@ -202,8 +204,9 @@ class Ryujinx {
     }
     
     func getConnectedControllers() -> [Controller] {
-        
-        guard let jsonPtr = get_game_controllers() else {
+        var nill: String?
+
+        guard let jsonPtr = nill else {//get_game_controllers() else {
             return []
         }
         

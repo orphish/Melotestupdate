@@ -14,6 +14,7 @@ namespace Ryujinx.Cpu
 
         public AddressSpace(MemoryBlock backingMemory, MemoryBlock baseMemory, MemoryBlock mirrorMemory, ulong addressSpaceSize)
         {
+
             _backingMemory = backingMemory;
 
             Base = baseMemory;

@@ -32,6 +32,7 @@ namespace Ryujinx.Ava.Common.Locale
 
         private void Load()
         {
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             var localeLanguageCode = !string.IsNullOrEmpty(ConfigurationState.Instance.UI.LanguageCode.Value) ?
                 ConfigurationState.Instance.UI.LanguageCode.Value : CultureInfo.CurrentCulture.Name.Replace('-', '_');
 

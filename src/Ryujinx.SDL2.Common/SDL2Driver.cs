@@ -95,12 +95,12 @@ namespace Ryujinx.SDL2.Common
 
                 SDL_EventState(SDL_EventType.SDL_CONTROLLERSENSORUPDATE, SDL_DISABLE);
 
-                string gamepadDbPath = Path.Combine(AppDataManager.BaseDirPath, "SDL_GameControllerDB.txt");
+                // string gamepadDbPath = Path.Combine(AppDataManager.BaseDirPath, "SDL_GameControllerDB.txt");
 
-                if (File.Exists(gamepadDbPath))
-                {
-                    SDL_GameControllerAddMappingsFromFile(gamepadDbPath);
-                }
+                // if (File.Exists(gamepadDbPath))
+                // {
+                //     SDL_GameControllerAddMappingsFromFile(gamepadDbPath);
+                // }
 
                 _registeredWindowHandlers = new ConcurrentDictionary<uint, Action<SDL_Event>>();
                 _worker = new Thread(EventWorker);

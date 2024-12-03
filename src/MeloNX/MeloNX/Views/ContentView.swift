@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var config: Ryujinx.Configuration
     @State private var settings: [MoltenVKSettings]
     @State private var isVirtualControllerActive: Bool = false
+    @State var onscreencontroller: Controller = Controller(id: "", name: "")
     
     // MARK: - Initialization
     init() {
@@ -84,16 +85,17 @@ struct ContentView: View {
             Section("Settings") {
                 NavigationLink("Config") {
                     SettingsView(config: $config, MoltenVKSettings: $settings)
+                        .onAppear() {
+                            virtualController?.disconnect()
+                        }
                 }
             }
             
             Section("Controller") {
                 Button("Refresh", action: refreshControllersList)
-                
+                Divider()
                 ForEach(controllersList, id: \.self) { controller in
-                    if controller.name != "Apple Touch Controller" {
-                        controllerRow(for: controller)
-                    }
+                    controllerRow(for: controller)
                 }
             }
         }
@@ -128,15 +130,11 @@ struct ContentView: View {
         virtualController = GCVirtualController(configuration: configuration)
         virtualController?.connect()
         
-        controllersList.removeAll(where: { $0.name == "Apple Touch Controller" })
     }
     
     private func destroyVirtualController() {
         virtualController?.disconnect()
         virtualController = nil
-        
-        // Remove virtual controller from current controllers
-        controllersList.removeAll(where: { $0.name == "Apple Touch Controller" })
     }
     
     // MARK: - Helper Methods
@@ -152,33 +150,37 @@ struct ContentView: View {
     private func setupEmulation() {
         virtualController?.disconnect()
         
-        
-        controllerCallback = {
-            DispatchQueue.main.async {
-//                controllersList = Ryujinx.shared.getConnectedControllers()
-                currentControllers.removeAll(where: { $0.name == "Apple Touch Controller" })
-                if controllersList.count == 2,
-                   controllersList.contains(where: { $0.name == "Apple Touch Controller" }) {
-                    currentControllers.append(controllersList[1])
+        if controllersList.first(where: { $0 == onscreencontroller}) != nil {
+            controllerCallback = {
+                DispatchQueue.main.async {
+                    controllersList = Ryujinx.shared.getConnectedControllers()
+                    
+                    print(currentControllers)
+                    start(displayid: 1)
                 }
-                
+            }
+            
+            
+            showVirtualController()
+        } else {
+            
+            DispatchQueue.main.async {
                 print(currentControllers)
                 start(displayid: 1)
             }
         }
-        
-        
-        showVirtualController()
     }
     
     private func refreshControllersList() {
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-//            controllersList = Ryujinx.shared.getConnectedControllers()
-            controllersList.removeAll(where: { $0.id == "0" })
-            
-            controllersList.removeAll(where: { $0.name == "Apple Touch Controller" })
-            
-            if let controller = controllersList.first, !controllersList.isEmpty {
+            controllersList = Ryujinx.shared.getConnectedControllers()
+            var controller = controllersList.first(where: { $0.name.hasPrefix("Apple")})
+            self.onscreencontroller = (controller ?? Controller(id: "", name: ""))
+            if controllersList.count > 2 {
+                let controller = controllersList[2]
+                currentControllers.append(controller)
+                
+            } else if let controller = controllersList.first(where: { $0.id == onscreencontroller.id }), !controllersList.isEmpty {
                 currentControllers.append(controller)
             }
         }
