@@ -98,7 +98,6 @@ namespace Ryujinx.HLE.HOS.Applets.Error
                 SystemLanguage.CanadianFrench       => "fr-CA",
                 SystemLanguage.LatinAmericanSpanish => "es-419",
                 SystemLanguage.SimplifiedChinese    => "zh-Hans",
-                SystemLanguage.TraditionalChinese   => "zh-Hant",
                 SystemLanguage.BrazilianPortuguese  => "pt-BR",
                 _                                   => "en-US",
 #pragma warning restore IDE0055

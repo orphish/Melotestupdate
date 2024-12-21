@@ -102,10 +102,6 @@ namespace Ryujinx.Headless.SDL2
             Version = "1";
             // Make process DPI aware for proper window sizing on high-res screens.
             ForceDpiAware.Windows();
-            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
-            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
             Silk.NET.Core.Loader.SearchPathContainer.Platform = Silk.NET.Core.Loader.UnderlyingPlatform.MacOS;
 

@@ -47,7 +47,7 @@ namespace ARMeilleure.Translation.Cache
                     return;
                 }
 
-                _jitRegion = new ReservedRegion(allocator, CacheSize);
+                _jitRegion = new ReservedRegion(allocator, (ulong)(OperatingSystem.IsIOS() ? CacheSizeIOS : CacheSize));
 
                 if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS() && !OperatingSystem.IsIOS())
                 {
@@ -80,6 +80,7 @@ namespace ARMeilleure.Translation.Cache
                 
                 if (OperatingSystem.IsIOS())
                 {
+                    ReprotectAsWritable(funcOffset, code.Length);
                     Marshal.Copy(code, 0, funcPtr, code.Length);
                     ReprotectAsExecutable(funcOffset, code.Length);
 
@@ -119,6 +120,13 @@ namespace ARMeilleure.Translation.Cache
 
         public static void Unmap(nint pointer)
         {
+
+            if (OperatingSystem.IsIOS())
+            {
+                return;
+            }
+
+
             lock (_lock)
             {
                 Debug.Assert(_initialized);
@@ -157,7 +165,18 @@ namespace ARMeilleure.Translation.Cache
         {
             codeSize = AlignCodeSize(codeSize);
 
-            int allocOffset = _cacheAllocator.Allocate(codeSize);
+            int alignment = CodeAlignment;
+
+            if (OperatingSystem.IsIOS())
+            {
+                alignment = 0x4000;
+            }
+
+            int allocOffset = _cacheAllocator.Allocate(ref codeSize, alignment);
+
+            //DEBUG: Show JIT Memory Allocation
+
+            //Console.WriteLine($"{allocOffset:x8}: {codeSize:x8} {alignment:x8}");
 
             if (allocOffset < 0)
             {
@@ -171,6 +190,13 @@ namespace ARMeilleure.Translation.Cache
 
         private static int AlignCodeSize(int codeSize)
         {
+            int alignment = CodeAlignment;
+
+            if (OperatingSystem.IsIOS())
+            {
+                alignment = 0x4000;
+            }
+
             return checked(codeSize + (CodeAlignment - 1)) & ~(CodeAlignment - 1);
         }
 

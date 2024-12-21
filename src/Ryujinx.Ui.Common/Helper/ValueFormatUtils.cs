@@ -73,7 +73,7 @@ namespace Ryujinx.UI.Common.Helper
         /// <returns>A formatted string that can be displayed in the UI.</returns>
         public static string FormatDateTime(DateTime? utcDateTime, CultureInfo culture = null)
         {
-            culture ??= CultureInfo.CurrentCulture;
+            culture ??= CultureInfo.InvariantCulture;
 
             return utcDateTime?.ToLocalTime().ToString(culture);
         }
@@ -159,7 +159,7 @@ namespace Ryujinx.UI.Common.Helper
         /// <returns>A <see cref="DateTime"/> object. If the input string couldn't be parsed, <see cref="DateTime.UnixEpoch"/> is returned.</returns>
         public static DateTime ParseDateTime(string dateTimeString)
         {
-            if (!DateTime.TryParse(dateTimeString, CultureInfo.CurrentCulture, out DateTime parsedDateTime))
+            if (!DateTime.TryParse(dateTimeString, CultureInfo.InvariantCulture, out DateTime parsedDateTime))
             {
                 // Games that were never played are supposed to appear before the oldest played games in the list,
                 // so returning DateTime.UnixEpoch here makes sense.

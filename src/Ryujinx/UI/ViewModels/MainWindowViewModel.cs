@@ -1154,7 +1154,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     return true;
                 }
 
-                CompareInfo compareInfo = CultureInfo.CurrentCulture.CompareInfo;
+                CompareInfo compareInfo = CultureInfo.InvariantCulture.CompareInfo;
 
                 return compareInfo.IndexOf(app.Name, _searchText, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0;
             }

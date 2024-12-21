@@ -19,8 +19,7 @@ namespace ARMeilleure.CodeGen.Arm64
                 LinuxFeatureInfoHwCap = (LinuxFeatureFlagsHwCap)getauxval(AT_HWCAP);
                 LinuxFeatureInfoHwCap2 = (LinuxFeatureFlagsHwCap2)getauxval(AT_HWCAP2);
             }
-
-            if (OperatingSystem.IsMacOS())
+            if (OperatingSystem.IsMacOS() || OperatingSystem.IsIOS())
             {
                 for (int i = 0; i < _sysctlNames.Length; i++)
                 {
@@ -130,6 +129,7 @@ namespace ARMeilleure.CodeGen.Arm64
         private static unsafe partial int sysctlbyname([MarshalAs(UnmanagedType.LPStr)] string name, out int oldValue, ref ulong oldSize, nint newValue, ulong newValueSize);
 
         [SupportedOSPlatform("macos")]
+        [SupportedOSPlatform("ios")]
         private static bool CheckSysctlName(string name)
         {
             ulong size = sizeof(int);

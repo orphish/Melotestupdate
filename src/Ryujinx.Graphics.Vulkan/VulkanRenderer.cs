@@ -14,6 +14,14 @@ using System.Runtime.InteropServices;
 using Format = Ryujinx.Graphics.GAL.Format;
 using PrimitiveTopology = Ryujinx.Graphics.GAL.PrimitiveTopology;
 using SamplerCreateInfo = Ryujinx.Graphics.GAL.SamplerCreateInfo;
+using System.Globalization;
+using System.Threading;
+using System;
+using System.Globalization;
+using System.Threading;
+using System.Resources;
+using System.Reflection;
+
 
 namespace Ryujinx.Graphics.Vulkan
 {
@@ -497,6 +505,33 @@ namespace Ryujinx.Graphics.Vulkan
             Api.GetDeviceQueue(_device, queueFamilyIndex, 0, out var queue);
             Queue = queue;
             QueueLock = new object();
+
+            try 
+            {
+                // Set invariant culture
+                CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+                AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+                {
+                    var assemblyName = new AssemblyName(args.Name);
+                    assemblyName.CultureInfo = CultureInfo.InvariantCulture;
+                    try 
+                    {
+                        return Assembly.Load(assemblyName);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to set culture: {ex.Message}");
+            }
 
             LoadFeatures(maxQueueCount, queueFamilyIndex);
 

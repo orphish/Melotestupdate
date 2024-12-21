@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
-import SDL2
+// import SDL2
 import GameController
+import Darwin
+import UIKit
+import MetalKit
+// import SDL
 
 struct MoltenVKSettings: Codable, Hashable {
     let string: String
-    var bool: Bool?
-    var value: String?
+    var value: String
 }
 
 struct ContentView: View {
@@ -25,38 +28,36 @@ struct ContentView: View {
     @State private var config: Ryujinx.Configuration
     @State private var settings: [MoltenVKSettings]
     @State private var isVirtualControllerActive: Bool = false
+    @AppStorage("isVirtualController") var isVCA: Bool = true
     @State var onscreencontroller: Controller = Controller(id: "", name: "")
+    @AppStorage("JIT") var isJITEnabled: Bool = false
     
     // MARK: - Initialization
     init() {
-        let defaultConfig = Ryujinx.Configuration(gamepath: "")
+        let defaultConfig = loadSettings() ?? Ryujinx.Configuration(gamepath: "")
         _config = State(initialValue: defaultConfig)
         
         let defaultSettings: [MoltenVKSettings] = [
-            MoltenVKSettings(string: "MVK_CONFIG_MAX_ACTIVE_METAL_COMMAND_BUFFERS_PER_QUEUE", value: "1024"),
-            MoltenVKSettings(string: "MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", value: "1"),
-            MoltenVKSettings(string: "MVK_CONFIG_RESUME_LOST_DEVICE", value: "1")
+            MoltenVKSettings(string: "MVK_CONFIG_MAX_ACTIVE_METAL_COMMAND_BUFFERS_PER_QUEUE", value: "192"),
+            MoltenVKSettings(string: "MVK_CONFIG_PREFILL_METAL_COMMAND_BUFFERS", value: "2"),
+            MoltenVKSettings(string: "MVK_USE_METAL_PRIVATE_API", value: "1"),
+            MoltenVKSettings(string: "MVK_CONFIG_RESUME_LOST_DEVICE", value: "1"),
+            MoltenVKSettings(string: "MVK_CONFIG_USE_METAL_PRIVATE_API", value: "1")
         ]
+        
         _settings = State(initialValue: defaultSettings)
+        
+        print("JIT Enabled: \(isJITEnabled)")
         
         initializeSDL()
     }
     
     // MARK: - Body
     var body: some View {
-        iOSNav {
-            if let game {
-                emulationView
-            } else {
-                mainMenuView
-            }
-        }
-        .onChange(of: isVirtualControllerActive) { newValue in
-            if newValue {
-                createVirtualController()
-            } else {
-                destroyVirtualController()
-            }
+        if let game {
+            emulationView
+        } else {
+            mainMenuView
         }
     }
     
@@ -69,138 +70,93 @@ struct ContentView: View {
     }
     
     private var mainMenuView: some View {
-        HStack {
-            GameListView(startemu: $game)
-                .onAppear {
-                    createVirtualController()
-                    refreshControllersList()
-                }
-            
-            settingsListView
-        }
-    }
-    
-    private var settingsListView: some View {
-        List {
-            Section("Settings") {
-                NavigationLink("Config") {
-                    SettingsView(config: $config, MoltenVKSettings: $settings)
-                        .onAppear() {
-                            virtualController?.disconnect()
-                        }
-                }
+        MainTabView(startemu: $game, config: $config, MVKconfig: $settings, controllersList: $controllersList, currentControllers: $currentControllers, onscreencontroller: $onscreencontroller)
+            .onAppear() {
+                refreshControllersList()
             }
-            
-            Section("Controller") {
-                Button("Refresh", action: refreshControllersList)
-                Divider()
-                ForEach(controllersList, id: \.self) { controller in
-                    controllerRow(for: controller)
-                }
-            }
-        }
-    }
-    
-    private func controllerRow(for controller: Controller) -> some View {
-        HStack {
-            Button(controller.name) {
-                toggleController(controller)
-            }
-            Spacer()
-            if currentControllers.contains(where: { $0.id == controller.id }) {
-                Image(systemName: "checkmark.circle.fill")
-            }
-        }
-    }
-    
-    // MARK: - Controller Management
-    private func createVirtualController() {
-        let configuration = GCVirtualController.Configuration()
-        configuration.elements = [
-            /*
-            GCInputLeftThumbstick,
-            GCInputRightThumbstick,
-            GCInputButtonA,
-            GCInputButtonB,
-            GCInputButtonX,
-            GCInputButtonY,
-             */
-        ]
-        
-        virtualController = GCVirtualController(configuration: configuration)
-        virtualController?.connect()
-        
-    }
-    
-    private func destroyVirtualController() {
-        virtualController?.disconnect()
-        virtualController = nil
     }
     
     // MARK: - Helper Methods
+    var SdlInitFlags: uint = SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_VIDEO;
     private func initializeSDL() {
-        DispatchQueue.main.async {
-            setMoltenVKSettings()
-            SDL_SetMainReady()
-            SDL_iPhoneSetEventPump(SDL_TRUE)
-            SDL_Init(SDL_INIT_VIDEO)
-        }
+        setMoltenVKSettings()
+        SDL_SetMainReady()
+        SDL_iPhoneSetEventPump(SDL_TRUE)
+        SDL_Init(SdlInitFlags)
+        // initialize()
     }
     
     private func setupEmulation() {
         virtualController?.disconnect()
+        patchMakeKeyAndVisible()
         
-        if controllersList.first(where: { $0 == onscreencontroller}) != nil {
-            controllerCallback = {
-                DispatchQueue.main.async {
-                    controllersList = Ryujinx.shared.getConnectedControllers()
-                    
-                    print(currentControllers)
-                    start(displayid: 1)
-                }
-            }
+        if (currentControllers.first(where: { $0 == onscreencontroller }) != nil) {
             
-            
-            showVirtualController()
-        } else {
+            isVCA = true
             
             DispatchQueue.main.async {
-                print(currentControllers)
                 start(displayid: 1)
             }
+            
+            
+        } else {
+            isVCA = false
+            
+            DispatchQueue.main.async {
+                start(displayid: 1)
+            }
+            
+            
         }
     }
     
     private func refreshControllersList() {
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-            controllersList = Ryujinx.shared.getConnectedControllers()
-            var controller = controllersList.first(where: { $0.name.hasPrefix("Apple")})
-            self.onscreencontroller = (controller ?? Controller(id: "", name: ""))
-            if controllersList.count > 2 {
-                let controller = controllersList[2]
-                currentControllers.append(controller)
-                
-            } else if let controller = controllersList.first(where: { $0.id == onscreencontroller.id }), !controllersList.isEmpty {
-                currentControllers.append(controller)
-            }
+        
+        
+        if let onscreen = controllersList.first(where: { $0.name == Ryujinx.shared.virtualController.controllername }) {
+            self.onscreencontroller = onscreen
         }
-    }
-    
-    private func toggleController(_ controller: Controller) {
-        if currentControllers.contains(where: { $0.id == controller.id }) {
-            currentControllers.removeAll(where: { $0.id == controller.id })
-        } else {
+        
+        controllersList.removeAll(where: { $0.id == "0"})
+        
+        if controllersList.count > 2 {
+            let controller =  controllersList[2]
+            currentControllers.append(controller)
+        } else if let controller = controllersList.first(where: { $0.id == onscreencontroller.id }), !controllersList.isEmpty {
             currentControllers.append(controller)
         }
     }
+
+    func showAlert(title: String, message: String, showOk: Bool, completion: @escaping (Bool) -> Void) {
+        DispatchQueue.main.async {
+            if let mainWindow = UIApplication.shared.windows.last {
+                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                
+                if showOk {
+                    let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+                        completion(true)
+                    }
+
+                    alert.addAction(okAction)
+                } else {
+                    completion(false)
+                }
+                
+                mainWindow.rootViewController?.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+
     
     private func start(displayid: UInt32) {
         guard let game else { return }
         
         config.gamepath = game.path
-        config.inputids = currentControllers.map(\.id)
+        config.inputids = Array(Set(currentControllers.map(\.id)))
         
-        allocateMemory()
+        if config.inputids.isEmpty {
+            config.inputids.append("0")
+        }
         
         do {
             try Ryujinx.shared.start(with: config)
@@ -208,22 +164,9 @@ struct ContentView: View {
             print("Error: \(error.localizedDescription)")
         }
     }
-    
-    private func allocateMemory() {
-        let physicalMemory = ProcessInfo.processInfo.physicalMemory
-        let totalMemoryInGB = Double(physicalMemory) / (1024 * 1024 * 1024)
-        
-        let pointer = UnsafeMutableRawPointer.allocate(
-            byteCount: Int(totalMemoryInGB),
-            alignment: MemoryLayout<UInt8>.alignment
-        )
-        pointer.initializeMemory(as: UInt8.self, repeating: 0, count: Int(totalMemoryInGB))
-    }
+
     
     private func setMoltenVKSettings() {
-        if let configs = loadSettings() {
-            self.config = configs
-        }
         
         settings.forEach { setting in
             setenv(setting.string, setting.value, 1)
@@ -245,3 +188,4 @@ func loadSettings() -> Ryujinx.Configuration? {
         return nil
     }
 }
+

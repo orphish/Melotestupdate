@@ -48,7 +48,7 @@ namespace Ryujinx.Headless.SDL2
 
         public NpadManager NpadManager { get; }
         public TouchScreenManager TouchScreenManager { get; }
-        public Switch Device { get; private set; }
+        public Switch Device;
         public IRenderer Renderer { get; private set; }
 
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;

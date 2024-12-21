@@ -21,7 +21,6 @@ namespace Ryujinx.HLE.HOS.SystemState
             "fr-CA",
             "es-419",
             "zh-Hans",
-            "zh-Hant",
             "pt-BR",
         };
 

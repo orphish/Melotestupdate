@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import SDL2
 import GameController
 
 struct Controller: Identifiable, Hashable {
@@ -32,13 +31,15 @@ struct iOSNav<Content: View>: View {
 class Ryujinx {
     private var isRunning = false
     
+    let virtualController = VirtualController()
+    
     @Published var controllerMap: [Controller] = []
     
     static let shared = Ryujinx()
     
     private init() {}
     
-    public struct Configuration : Codable {
+    public struct Configuration : Codable, Equatable {
         var gamepath: String
         var inputids: [String]
         var resscale: Float
@@ -49,7 +50,6 @@ class Ryujinx {
         var listinputids: Bool
         var fullscreen: Bool
         var memoryManagerMode: String
-        var disableVSync: Bool
         var disableShaderCache: Bool
         var disableDockedMode: Bool
         var enableTextureRecompression: Bool
@@ -63,7 +63,6 @@ class Ryujinx {
              listinputids: Bool = false,
              fullscreen: Bool = true,
              memoryManagerMode: String = "HostMapped",
-             disableVSync: Bool = false,
              disableShaderCache: Bool = false,
              disableDockedMode: Bool = false,
              nintendoinput: Bool = true,
@@ -78,7 +77,6 @@ class Ryujinx {
             self.tracelogs = tracelogs
             self.listinputids = listinputids
             self.fullscreen = fullscreen
-            self.disableVSync = disableVSync
             self.disableShaderCache = disableShaderCache
             self.disableDockedMode = disableDockedMode
             self.enableTextureRecompression = enableTextureRecompression
@@ -99,7 +97,7 @@ class Ryujinx {
         isRunning = true
         
         // Start The Emulation on the main thread
-        DispatchQueue.main.async {
+        RunLoop.current.perform {
             do {
                 let args = self.buildCommandLineArgs(from: config)
                 
@@ -145,29 +143,25 @@ class Ryujinx {
         args.append("--graphics-backend")
         args.append("Vulkan")
         
-        // Fixes the Stubs.DispatchLoop Crash
-        args.append(contentsOf: ["--memory-manager-mode", config.memoryManagerMode])
-        if config.fullscreen {
-            args.append(contentsOf: ["--exclusive-fullscreen", String(config.fullscreen)])
-            args.append(contentsOf: ["--exclusive-fullscreen-width", "1280"])
-            args.append(contentsOf: ["--exclusive-fullscreen-height", "720"])
+        args.append(contentsOf: ["--memory-manager-mode", "SoftwarePageTable"])
+        
+        args.append(contentsOf: ["--exclusive-fullscreen", String(config.fullscreen)])
+        args.append(contentsOf: ["--exclusive-fullscreen-width", "\(Int(UIScreen.main.bounds.width))"])
+        args.append(contentsOf: ["--exclusive-fullscreen-height", "\(Int(UIScreen.main.bounds.height))"])
+        
+        
+        if config.nintendoinput {
+            // args.append("--correct-controller")
         }
         
-        if config.resscale != 1 {
+        
+        //args.append("--disable-vsync")
+        
+        
+        if config.resscale != 1.0 {
             args.append(contentsOf: ["--resolution-scale", String(config.resscale)])
         }
         
-        if config.nintendoinput {
-            // args.append("--correct-ons-controller")
-        }
-        if config.enableInternet {
-            args.append("--enable-internet-connection")
-        }
-        
-        // Adding default args directly into additionalArgs
-        if config.disableVSync {
-            // args.append("--disable-vsync")
-        }
         if config.disableShaderCache {
             args.append("--disable-shader-cache")
         }
@@ -204,9 +198,9 @@ class Ryujinx {
     }
     
     func getConnectedControllers() -> [Controller] {
-        var nill: String?
+        
 
-        guard let jsonPtr = nill else {//get_game_controllers() else {
+        guard let jsonPtr = get_game_controllers() else {
             return []
         }
         

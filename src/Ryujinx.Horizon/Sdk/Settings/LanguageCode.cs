@@ -26,7 +26,6 @@ namespace Ryujinx.Horizon.Sdk.Settings
             "fr-CA",
             "es-419",
             "zh-Hans",
-            "zh-Hant",
             "pt-BR"
         };
 
