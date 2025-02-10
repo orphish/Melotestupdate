@@ -33,11 +33,7 @@ struct MeloNXApp: App {
                         }
                     }
                     .onAppear {
-                        #if RELEASE
                         initR()
-                        #else
-                        showed = true
-                        #endif
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.black.opacity(1))
