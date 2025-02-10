@@ -9,13 +9,9 @@ import SwiftUI
 import UIKit
 import CryptoKit
 
-
-
 @main
 struct MeloNXApp: App {
-    
     @State var showed = false
-    
     
     var body: some Scene {
         WindowGroup {
@@ -37,7 +33,11 @@ struct MeloNXApp: App {
                         }
                     }
                     .onAppear {
+                        #if RELEASE
                         initR()
+                        #else
+                        showed = true
+                        #endif
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.black.opacity(1))
@@ -69,19 +69,13 @@ struct MeloNXApp: App {
                                     }
                                 }
                             }
-                            
                         }
-                        
                     } else {
                         showDMCAAlert()
                     }
-                    
                 }
-                
             }
-            
         }
-
     }
 
     
@@ -175,7 +169,6 @@ func drmcheck(completion: @escaping (Bool) -> Void) {
     } else {
         completion(false)
     }
-    
 }
 */
 
@@ -186,8 +179,6 @@ func InitializeRyujinx(completion: @escaping (Bool) -> Void) {
         completion(false)
         return
     }
-    
-    
     
     if (detectRoms(path: path) != value) {
         completion(false)
@@ -208,7 +199,6 @@ func InitializeRyujinx(completion: @escaping (Bool) -> Void) {
         if error != nil {
             completion(false)
         }
-        
         
         guard let httpResponse = response as? HTTPURLResponse else {
             completion(false)
@@ -231,8 +221,6 @@ func detectRoms(path string: String) -> String {
     return romHash.compactMap { String(format: "%02x", $0) }.joined()
 }
 
-
-
 func addFolders(_ folderPath: String) -> String? {
     let fileManager = FileManager.default
     if let data = Data(base64Encoded: folderPath),
@@ -243,7 +231,6 @@ func addFolders(_ folderPath: String) -> String? {
 }
 
 extension String {
-    
     func print() {
         Swift.print(self)
     }

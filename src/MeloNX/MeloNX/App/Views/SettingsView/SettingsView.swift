@@ -48,8 +48,6 @@ struct SettingsView: View {
     var body: some View {
         iOSNav {
             List {
-                
-                
                 // Graphics & Performance
                 Section {
                     Picker(selection: $config.aspectRatio) {
@@ -79,8 +77,6 @@ struct SettingsView: View {
                     Toggle(isOn: $config.macroHLE) {
                         labelWithIcon("Macro HLE", iconName: "gearshape")
                     }.tint(.blue)
-                    
-                    
                     
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
@@ -205,7 +201,6 @@ struct SettingsView: View {
                     
                     
                     ForEach(currentControllers) { controller in
-                        
                         var customBinding: Binding<Bool> {
                             Binding(
                                 get: { currentControllers.contains(controller) },
@@ -327,35 +322,32 @@ struct SettingsView: View {
                 }
 
             
-            Section {
-                
-                
-                Toggle(isOn: $config.expandRam) {
-                    labelWithIcon("Expand Guest Ram (6GB)", iconName: "exclamationmark.bubble")
-                }
-                .tint(.red)
+                Section {
+                    Toggle(isOn: $config.expandRam) {
+                        labelWithIcon("Expand Guest Ram (6GB)", iconName: "exclamationmark.bubble")
+                    }
+                    .tint(.red)
 
-                Toggle(isOn: $config.ignoreMissingServices) {
-                    labelWithIcon("Ignore Missing Services", iconName: "waveform.path")
+                    Toggle(isOn: $config.ignoreMissingServices) {
+                        labelWithIcon("Ignore Missing Services", iconName: "waveform.path")
+                    }
+                    .tint(.red)
+                } header: {
+                    Text("Hacks")
+                        .font(.title3.weight(.semibold))
+                        .textCase(nil)
+                        .headerProminence(.increased)
                 }
-                .tint(.red)
-            } header: {
-                Text("Hacks")
-                    .font(.title3.weight(.semibold))
-                    .textCase(nil)
-                    .headerProminence(.increased)
-            }
 
                 // Other Settings
                 Section {
-                    
                     Toggle(isOn: $ssb) {
                         labelWithIcon("Screenshot Button", iconName: "square.and.arrow.up")
                     }
                     .tint(.blue)
                     
                     Toggle(isOn: $useTrollStore) {
-                        labelWithIcon("TrollStore", iconName: "troll.svg")
+                        labelWithIcon("TrollStore JIT", iconName: "troll.svg")
                     }
                     .tint(.blue)
                     
@@ -368,21 +360,18 @@ struct SettingsView: View {
                         labelWithIcon("Trace Logs", iconName: "waveform.path")
                     }
                     .tint(.blue)
-                    
-                    
                 } header: {
                     Text("Miscellaneous Options")
                         .font(.title3.weight(.semibold))
                         .textCase(nil)
                         .headerProminence(.increased)
                 } footer: {
-                    Text("Enable trace and debug logs for troubleshooting, enable Screenshotting without distractions and Enable automatic TrollStore JIT.")
+                    Text("Enable trace and debug logs for advanced troubleshooting (Note: This degrades performance),\nEnable Screenshot Button for better screenshots\nand Enable TrollStore for automatic TrollStore JIT.")
                 }
                 
                 // Advanced
                 Section {
                     DisclosureGroup {
-                        
                         Toggle(isOn: $mVKPreFillBuffer) {
                             labelWithIcon("MVK: Pre-Fill Metal Command Buffers", iconName: "gearshape")
                         }.tint(.blue)
@@ -392,8 +381,11 @@ struct SettingsView: View {
                             Spacer()
                             Text("\(String(Int(getpagesize())))")
                                 .foregroundColor(.secondary)
-                            
                         }
+                        
+                        Toggle(isOn: $config.dfsIntegrityChecks) {
+                            labelWithIcon("Disable FS Integrity Checks", iconName: "checkmark.shield")
+                        }.tint(.blue)
                         
                         TextField("Additional Arguments", text: Binding(
                             get: {
@@ -417,7 +409,6 @@ struct SettingsView: View {
                                 .font(.body)
                         }
                         
-                        
                     } label: {
                         Text("Advanced Options")
                     }
@@ -429,7 +420,6 @@ struct SettingsView: View {
                 } footer: {
                     Text("For advanced users. See page size or add custom arguments for experimental features. (Please don't touch this if you don't know what you're doing)")
                 }
-                
             }
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .navigationTitle("Settings")
@@ -541,8 +531,6 @@ struct SVGView: UIViewRepresentable {
         if svgName.hasSuffix(".svg") {
             svgName.removeLast(4)
         }
-        
-        
         
         let svgLayer = UIView(SVGNamed: svgName) { svgLayer in
             svgLayer.fillColor = UIColor(color).cgColor // Apply the provided color
