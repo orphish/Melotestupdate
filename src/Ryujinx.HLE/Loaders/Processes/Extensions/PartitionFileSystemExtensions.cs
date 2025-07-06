@@ -215,7 +215,7 @@ namespace Ryujinx.HLE.Loaders.Processes.Extensions
 
             fileSystem.OpenFile(ref ncaFile.Ref, path.ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
-            return new Nca(keySet, ncaFile.Release().AsStorage());
+            return new Nca(device.Configuration.VirtualFileSystem.KeySet, ncaFile.Release().AsStorage());
         }
 
         public static Nca GetNca(this IFileSystem fileSystem, KeySet keySet, string path)

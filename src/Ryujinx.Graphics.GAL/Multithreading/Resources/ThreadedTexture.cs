@@ -1,7 +1,6 @@
 using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL.Multithreading.Commands.Texture;
 using Ryujinx.Graphics.GAL.Multithreading.Model;
-using System.Buffers;
 
 namespace Ryujinx.Graphics.GAL.Multithreading.Resources
 {

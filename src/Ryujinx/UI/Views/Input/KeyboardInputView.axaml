@@ -302,7 +302,6 @@
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
-<<<<<<< HEAD
                             <!-- Capture -->
                             <StackPanel
                                 Margin="0,0,0,4"
@@ -320,8 +319,6 @@
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
-=======
->>>>>>> metal/master
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -686,7 +683,6 @@
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
-<<<<<<< HEAD
                             <!-- Home -->
                             <StackPanel
                                 Margin="0,0,0,4"
@@ -704,16 +700,10 @@
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
-=======
->>>>>>> metal/master
                         </StackPanel>
                     </StackPanel>
                 </Border>
             </StackPanel>
         </Grid>
     </StackPanel>
-<<<<<<< HEAD
 </UserControl>
-=======
-</UserControl>
->>>>>>> metal/master

@@ -7,7 +7,6 @@ using Ryujinx.Graphics.Texture.Astc;
 using Ryujinx.Memory;
 using Ryujinx.Memory.Range;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -682,7 +681,7 @@ namespace Ryujinx.Graphics.Gpu.Image
         }
 
         /// <summary>
-        /// Uploads new texture data to the host GPU. The data passed as a <see cref="IMemoryOwner{Byte}" /> will be disposed when the operation completes.
+        /// Uploads new texture data to the host GPU.
         /// </summary>
         /// <param name="data">New data</param>
         public void SetData(MemoryOwner<byte> data)
@@ -699,7 +698,7 @@ namespace Ryujinx.Graphics.Gpu.Image
         }
 
         /// <summary>
-        /// Uploads new texture data to the host GPU for a specific layer/level. The data passed as a <see cref="IMemoryOwner{Byte}" /> will be disposed when the operation completes.
+        /// Uploads new texture data to the host GPU for a specific layer/level.
         /// </summary>
         /// <param name="data">New data</param>
         /// <param name="layer">Target layer</param>
@@ -716,7 +715,7 @@ namespace Ryujinx.Graphics.Gpu.Image
         }
 
         /// <summary>
-        /// Uploads new texture data to the host GPU for a specific layer/level and 2D sub-region. The data passed as a <see cref="IMemoryOwner{Byte}" /> will be disposed when the operation completes.
+        /// Uploads new texture data to the host GPU for a specific layer/level and 2D sub-region.
         /// </summary>
         /// <param name="data">New data</param>
         /// <param name="layer">Target layer</param>
@@ -953,11 +952,6 @@ namespace Ryujinx.Graphics.Gpu.Image
                             return PixelConverter.ConvertR4G4B4A4ToR8G8B8A8(result.Span, width);
                         }
                 }
-            }
-
-            if (!ReferenceEquals(linear, result))
-            {
-                linear.Dispose();
             }
 
             return result;

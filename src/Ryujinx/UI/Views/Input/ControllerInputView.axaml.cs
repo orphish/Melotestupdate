@@ -61,11 +61,7 @@ namespace Ryujinx.Ava.UI.Views.Input
 
                         PointerPressed += MouseClick;
 
-<<<<<<< HEAD
                         var viewModel = DataContext as ControllerInputViewModel;
-=======
-                        var viewModel = (DataContext as ControllerInputViewModel);
->>>>>>> metal/master
 
                         IKeyboard keyboard = (IKeyboard)viewModel.ParentModel.AvaloniaKeyboardDriver.GetGamepad("0"); // Open Avalonia keyboard for cancel operations.
                         IButtonAssigner assigner = CreateButtonAssigner(isStick);
@@ -145,15 +141,12 @@ namespace Ryujinx.Ava.UI.Views.Input
                                     case "RightJoystick":
                                         viewModel.Config.RightJoystick = buttonValue.AsHidType<StickInputId>();
                                         break;
-<<<<<<< HEAD
                                     case "ButtonCapture":
                                         viewModel.Config.ButtonCapture = buttonValue.AsHidType<GamepadInputId>();
                                         break;
                                     case "ButtonHome":
                                         viewModel.Config.ButtonHome = buttonValue.AsHidType<GamepadInputId>();
                                         break;
-=======
->>>>>>> metal/master
                                 }
                             }
                         };

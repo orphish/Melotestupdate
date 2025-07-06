@@ -305,7 +305,6 @@
                                 <ToggleButton Name="DpadRight">
                                     <TextBlock
                                         Text="{Binding Config.DpadRight, Converter={StaticResource Key}}"
-<<<<<<< HEAD
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
@@ -323,8 +322,6 @@
                                 <ToggleButton Name="Capture">
                                     <TextBlock
                                         Text="{Binding Config.ButtonCapture, Converter={StaticResource Key}}"
-=======
->>>>>>> metal/master
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
@@ -666,7 +663,6 @@
                                 <ToggleButton Name="ButtonY">
                                     <TextBlock
                                         Text="{Binding Config.ButtonY, Converter={StaticResource Key}}"
-<<<<<<< HEAD
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
@@ -684,8 +680,6 @@
                                 <ToggleButton Name="Home">
                                     <TextBlock
                                         Text="{Binding Config.ButtonHome, Converter={StaticResource Key}}"
-=======
->>>>>>> metal/master
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>

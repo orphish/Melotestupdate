@@ -247,16 +247,10 @@ namespace Ryujinx.HLE.HOS.Applets
                     _textValue = inputText ?? initialText ?? DefaultInputText;
                     _lastResult = !string.IsNullOrEmpty(inputText) ? KeyboardResult.Accept : KeyboardResult.Cancel;
 
-<<<<<<< HEAD
                     while (_textValue.Length < _keyboardForegroundConfig.StringLengthMin)
                     {
                         _textValue = string.Join(" ", _textValue, _textValue);
                     }
-=======
-                _lastResult = _device.UIHandler.DisplayInputDialog(args, out _textValue) ? KeyboardResult.Accept : KeyboardResult.Cancel;
-                _textValue ??= initialText ?? DefaultInputText;
-            }
->>>>>>> metal/master
 
                     // Truncate the text if it exceeds the maximum length
                     if (_textValue.Length > _keyboardForegroundConfig.StringLengthMax)
